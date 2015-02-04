@@ -2,6 +2,7 @@ package gsd
 
 import (
 	"crypto/tls"
+	"encoding/base64"
 	"net/http"
 	"net/http/httputil"
 	"strconv"
@@ -27,6 +28,7 @@ func (s *HttpsService) GetBanner(ip string, port int) Banner {
 		Service: s.Name(),
 	}
 
+	// Connect and make a GET request
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
@@ -37,13 +39,18 @@ func (s *HttpsService) GetBanner(ip string, port int) Banner {
 		return banner
 	}
 
+	// Get the server certificate and base64 it
+	rawCert := res.TLS.PeerCertificates[0].Raw
+	b64Cert := base64.StdEncoding.EncodeToString(rawCert)
+
 	dump, err := httputil.DumpResponse(res, true)
 	if err != nil {
 		banner.Error = err.Error()
 		return banner
 	}
 
-	banner.Content = string(dump)
+	banner.Content = "---- BEGIN CERTIFICATE ----\n" + b64Cert +
+		"---- END CERTIFICATE ----\n\n" + string(dump)
 
 	return banner
 }
