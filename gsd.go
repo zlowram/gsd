@@ -1,5 +1,10 @@
 package gsd
 
+const (
+	READ_TIMEOUT = 5
+	CONN_TIMEOUT = 5
+)
+
 type Gsd struct {
 	Ips      []string
 	Ports    []int

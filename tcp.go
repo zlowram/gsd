@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-const READ_TIMEOUT = 5
-
 type TCPService struct {
 	name string
 }
@@ -33,7 +31,7 @@ func (s *TCPService) GetBanner(ip string, port int) Banner {
 	}
 
 	// Connect
-	conn, err := net.DialTimeout("tcp", ip+":"+strconv.Itoa(port), 5*time.Second)
+	conn, err := net.DialTimeout("tcp", ip+":"+strconv.Itoa(port), CONN_TIMEOUT*time.Second)
 	if err != nil {
 		banner.Error = err.Error()
 		return banner

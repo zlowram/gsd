@@ -33,7 +33,7 @@ func (s *TCPTLSService) GetBanner(ip string, port int) Banner {
 	}
 
 	// Connect
-	dialer := &net.Dialer{Timeout: 5 * time.Second}
+	dialer := &net.Dialer{Timeout: CONN_TIMEOUT * time.Second}
 	config := &tls.Config{InsecureSkipVerify: true}
 	conn, err := tls.DialWithDialer(dialer, "tcp", ip+":"+strconv.Itoa(port), config)
 	if err != nil {
