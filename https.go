@@ -49,8 +49,8 @@ func (s *HttpsService) GetBanner(ip string, port int) Banner {
 		return banner
 	}
 
-	banner.Content = "---- BEGIN CERTIFICATE ----\n" + b64Cert +
-		"---- END CERTIFICATE ----\n\n" + string(dump)
+	banner.Content = "-----BEGIN CERTIFICATE-----\n" + b64Cert +
+		"-----END CERTIFICATE-----\n\n" + string(dump)
 
 	return banner
 }

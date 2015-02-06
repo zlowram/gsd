@@ -45,8 +45,8 @@ func (s *TCPTLSService) GetBanner(ip string, port int) Banner {
 	state := conn.ConnectionState()
 	rawCert := state.PeerCertificates[0].Raw
 	b64Cert := base64.StdEncoding.EncodeToString(rawCert)
-	banner.Content = "---- BEGIN CERTIFICATE ----\n" + b64Cert +
-		"---- END CERTIFICATE ----\n"
+	banner.Content = "-----BEGIN CERTIFICATE-----\n" + b64Cert +
+		"-----END CERTIFICATE-----\n"
 
 	// Wait to receive content
 	now := time.Now()
