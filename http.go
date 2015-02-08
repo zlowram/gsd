@@ -3,7 +3,6 @@ package gsd
 import (
 	"net/http"
 	"net/http/httputil"
-	"strconv"
 	"time"
 )
 
@@ -19,7 +18,7 @@ func (s *HttpService) Name() string {
 	return s.name
 }
 
-func (s *HttpService) GetBanner(ip string, port int) Banner {
+func (s *HttpService) GetBanner(ip string, port string) Banner {
 	banner := Banner{
 		Ip:      ip,
 		Port:    port,
@@ -27,7 +26,7 @@ func (s *HttpService) GetBanner(ip string, port int) Banner {
 	}
 
 	c := &http.Client{Timeout: 5 * time.Second}
-	res, err := c.Get("http://" + ip + ":" + strconv.Itoa(port))
+	res, err := c.Get("http://" + ip + ":" + port)
 	if err != nil {
 		banner.Error = err.Error()
 		return banner

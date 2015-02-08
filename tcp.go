@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"strconv"
 	"time"
 )
 
@@ -23,7 +22,7 @@ func (s *TCPService) Name() string {
 	return s.name
 }
 
-func (s *TCPService) GetBanner(ip string, port int) Banner {
+func (s *TCPService) GetBanner(ip string, port string) Banner {
 	banner := Banner{
 		Ip:      ip,
 		Port:    port,
@@ -31,7 +30,7 @@ func (s *TCPService) GetBanner(ip string, port int) Banner {
 	}
 
 	// Connect
-	conn, err := net.DialTimeout("tcp", ip+":"+strconv.Itoa(port), CONN_TIMEOUT*time.Second)
+	conn, err := net.DialTimeout("tcp", ip+":"+port, CONN_TIMEOUT*time.Second)
 	if err != nil {
 		banner.Error = err.Error()
 		return banner

@@ -7,11 +7,11 @@ const (
 
 type Gsd struct {
 	Ips      []string
-	Ports    []int
+	Ports    []string
 	Services []Service
 }
 
-func NewGsd(ips []string, ports []int) *Gsd {
+func NewGsd(ips []string, ports []string) *Gsd {
 	return &Gsd{Ips: ips, Ports: ports}
 }
 
@@ -24,7 +24,7 @@ func (g *Gsd) Run() []Banner {
 	for _, i := range g.Ips {
 		for _, p := range g.Ports {
 			for _, s := range g.Services {
-				go func(s Service, i string, p int) {
+				go func(s Service, i string, p string) {
 					b <- s.GetBanner(i, p)
 				}(s, i, p)
 			}
@@ -46,12 +46,12 @@ func appendSlice(a []Service, b []Service) []Service {
 
 type Service interface {
 	Name() string
-	GetBanner(string, int) Banner
+	GetBanner(string, string) Banner
 }
 
 type Banner struct {
 	Ip      string
-	Port    int
+	Port    string
 	Service string
 	Content string
 	Error   string

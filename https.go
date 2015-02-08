@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"net/http"
 	"net/http/httputil"
-	"strconv"
 	"time"
 )
 
@@ -21,7 +20,7 @@ func (s *HttpsService) Name() string {
 	return s.name
 }
 
-func (s *HttpsService) GetBanner(ip string, port int) Banner {
+func (s *HttpsService) GetBanner(ip string, port string) Banner {
 	banner := Banner{
 		Ip:      ip,
 		Port:    port,
@@ -33,7 +32,7 @@ func (s *HttpsService) GetBanner(ip string, port int) Banner {
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	c := &http.Client{Timeout: 5 * time.Second, Transport: tr}
-	res, err := c.Get("https://" + ip + ":" + strconv.Itoa(port))
+	res, err := c.Get("https://" + ip + ":" + port)
 	if err != nil {
 		banner.Error = err.Error()
 		return banner

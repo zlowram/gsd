@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"strconv"
 	"time"
 )
 
@@ -25,7 +24,7 @@ func (s *TCPTLSService) Name() string {
 	return s.name
 }
 
-func (s *TCPTLSService) GetBanner(ip string, port int) Banner {
+func (s *TCPTLSService) GetBanner(ip string, port string) Banner {
 	banner := Banner{
 		Ip:      ip,
 		Port:    port,
@@ -35,7 +34,7 @@ func (s *TCPTLSService) GetBanner(ip string, port int) Banner {
 	// Connect
 	dialer := &net.Dialer{Timeout: CONN_TIMEOUT * time.Second}
 	config := &tls.Config{InsecureSkipVerify: true}
-	conn, err := tls.DialWithDialer(dialer, "tcp", ip+":"+strconv.Itoa(port), config)
+	conn, err := tls.DialWithDialer(dialer, "tcp", ip+":"+port, config)
 	if err != nil {
 		banner.Error = err.Error()
 		return banner
