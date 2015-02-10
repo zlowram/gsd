@@ -31,6 +31,7 @@ func (s *HttpService) GetBanner(ip string, port string) Banner {
 		banner.Error = err.Error()
 		return banner
 	}
+	defer res.Body.Close()
 
 	dump, err := httputil.DumpResponse(res, true)
 	if err != nil {

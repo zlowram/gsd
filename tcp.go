@@ -35,6 +35,7 @@ func (s *TCPService) GetBanner(ip string, port string) Banner {
 		banner.Error = err.Error()
 		return banner
 	}
+	defer conn.Close()
 
 	// Wait to receive content
 	now := time.Now()

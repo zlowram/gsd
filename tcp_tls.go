@@ -39,9 +39,14 @@ func (s *TCPTLSService) GetBanner(ip string, port string) Banner {
 		banner.Error = err.Error()
 		return banner
 	}
+	defer conn.Close()
 
-	// Get the server certificate and base64 it
+	// Check if the connection is encrypted, get the certificate and base64 it
 	state := conn.ConnectionState()
+	if state.PeerCertificates == nil {
+		banner.Error = "Non encrypted HTTP connection"
+		return banner
+	}
 	rawCert := state.PeerCertificates[0].Raw
 	b64Cert := base64.StdEncoding.EncodeToString(rawCert)
 	banner.Content = "-----BEGIN CERTIFICATE-----\n" + b64Cert +

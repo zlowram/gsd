@@ -37,8 +37,14 @@ func (s *HttpsService) GetBanner(ip string, port string) Banner {
 		banner.Error = err.Error()
 		return banner
 	}
+	defer res.Body.Close()
 
-	// Get the server certificate and base64 it
+	// Check if the connection is encrypted, get the certificate and base64 it
+	if res.TLS == nil {
+		banner.Error = "Non encrypted HTTP connection"
+		return banner
+	}
+
 	rawCert := res.TLS.PeerCertificates[0].Raw
 	b64Cert := base64.StdEncoding.EncodeToString(rawCert)
 
