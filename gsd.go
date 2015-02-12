@@ -1,9 +1,12 @@
 package gsd
 
+import (
+	"sync"
+)
+
 const (
-	READ_TIMEOUT   = 5
-	CONN_TIMEOUT   = 5
-	MAX_GOROUTINES = 100
+	READ_TIMEOUT = 5
+	CONN_TIMEOUT = 5
 )
 
 type Gsd struct {
@@ -17,35 +20,35 @@ func NewGsd(ips []string, ports []string) *Gsd {
 }
 
 func (g *Gsd) AddServices(services []Service) {
-	g.Services = appendSlice(g.Services, services)
+	g.Services = append(g.Services, services...)
 }
 
-func (g *Gsd) Run() []Banner {
+func (g *Gsd) Run(maxConn int) chan Banner {
 	b := make(chan Banner)
-	c := make(chan int, MAX_GOROUTINES)
+	go g.iterateServices(b, maxConn)
+	return b
+}
+
+func (g *Gsd) iterateServices(b chan<- Banner, maxConn int) {
+	var wg sync.WaitGroup
+
+	c := make(chan int, maxConn)
 	for _, i := range g.Ips {
 		for _, p := range g.Ports {
 			for _, s := range g.Services {
+				c <- 0
+				wg.Add(1)
 				go func(s Service, i string, p string) {
-					c <- 0
+					defer wg.Done()
 					b <- s.GetBanner(i, p)
+					<-c
 				}(s, i, p)
 			}
 		}
 	}
-	banners := make([]Banner, 0)
-	for i := 0; i < len(g.Ips)*len(g.Ports)*len(g.Services); i++ {
-		banners = append(banners, <-b)
-		<-c
-	}
-	return banners
-}
 
-func appendSlice(a []Service, b []Service) []Service {
-	for _, i := range b {
-		a = append(a, i)
-	}
-	return a
+	wg.Wait()
+	close(b)
 }
 
 type Service interface {

@@ -1,6 +1,7 @@
 package gsd
 
 import (
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"time"
@@ -25,7 +26,14 @@ func (s *HttpService) GetBanner(ip string, port string) Banner {
 		Service: s.Name(),
 	}
 
-	c := &http.Client{Timeout: 5 * time.Second}
+	tr := &http.Transport{
+		Dial: (&net.Dialer{
+			Timeout:   5 * time.Second,
+			KeepAlive: 0,
+		}).Dial,
+	}
+
+	c := &http.Client{Timeout: 5 * time.Second, Transport: tr}
 	res, err := c.Get("http://" + ip + ":" + port)
 	if err != nil {
 		banner.Error = err.Error()

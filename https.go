@@ -3,6 +3,7 @@ package gsd
 import (
 	"crypto/tls"
 	"encoding/base64"
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"time"
@@ -29,8 +30,13 @@ func (s *HttpsService) GetBanner(ip string, port string) Banner {
 
 	// Connect and make a GET request
 	tr := &http.Transport{
+		Dial: (&net.Dialer{
+			Timeout:   5 * time.Second,
+			KeepAlive: 0,
+		}).Dial,
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
+
 	c := &http.Client{Timeout: 5 * time.Second, Transport: tr}
 	res, err := c.Get("https://" + ip + ":" + port)
 	if err != nil {
