@@ -32,13 +32,21 @@ func (s *TCPTLSService) GetBanner(ip string, port string) Banner {
 	}
 
 	// Connect
-	dialer := &net.Dialer{Timeout: CONN_TIMEOUT * time.Second}
+	dialer := &GsdDialer{
+		Dialer: &net.Dialer{
+			Timeout:   CONN_TIMEOUT * time.Second,
+			KeepAlive: 0,
+		},
+	}
 	config := &tls.Config{InsecureSkipVerify: true}
-	conn, err := tls.DialWithDialer(dialer, "tcp", ip+":"+port, config)
+	dconn, err := dialer.Dial("tcp", ip+":"+port)
 	if err != nil {
 		banner.Error = err.Error()
 		return banner
 	}
+	defer dconn.Close()
+
+	conn := tls.Client(dconn, config)
 	defer conn.Close()
 
 	// Check if the connection is encrypted, get the certificate and base64 it

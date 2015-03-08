@@ -2,11 +2,18 @@ package gsd
 
 import (
 	"sync"
+
+	"golang.org/x/net/proxy"
 )
 
 const (
 	READ_TIMEOUT = 5
 	CONN_TIMEOUT = 5
+)
+
+var (
+	proxyHost string
+	proxyAuth *proxy.Auth
 )
 
 type Gsd struct {
@@ -21,6 +28,11 @@ func NewGsd(ips []string, ports []string) *Gsd {
 
 func (g *Gsd) AddServices(services []Service) {
 	g.Services = append(g.Services, services...)
+}
+
+func (g *Gsd) SetProxy(host string, auth *proxy.Auth) {
+	proxyHost = host
+	proxyAuth = auth
 }
 
 func (g *Gsd) Run(maxConn int) chan Banner {

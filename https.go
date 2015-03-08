@@ -30,9 +30,11 @@ func (s *HttpsService) GetBanner(ip string, port string) Banner {
 
 	// Connect and make a GET request
 	tr := &http.Transport{
-		Dial: (&net.Dialer{
-			Timeout:   5 * time.Second,
-			KeepAlive: 0,
+		Dial: (&GsdDialer{
+			Dialer: &net.Dialer{
+				Timeout:   CONN_TIMEOUT * time.Second,
+				KeepAlive: 0,
+			},
 		}).Dial,
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}

@@ -29,8 +29,14 @@ func (s *TCPService) GetBanner(ip string, port string) Banner {
 		Service: s.Name(),
 	}
 
-	// Connect
-	conn, err := net.DialTimeout("tcp", ip+":"+port, CONN_TIMEOUT*time.Second)
+	d := &GsdDialer{
+		&net.Dialer{
+			Timeout:   CONN_TIMEOUT * time.Second,
+			KeepAlive: 0,
+		},
+	}
+
+	conn, err := d.Dial("tcp", ip+":"+port)
 	if err != nil {
 		banner.Error = err.Error()
 		return banner
