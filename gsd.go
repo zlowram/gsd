@@ -67,7 +67,7 @@ func (g *Gsd) iterateServices(b chan<- Banner, maxConn int) {
 
 type Service interface {
 	Name() string
-	GetBanner(string, string) Banner
+	GetBanner(ip string, port string) Banner
 }
 
 type Banner struct {
