@@ -2,18 +2,20 @@ package gsd
 
 import (
 	"sync"
+	"time"
 
 	"golang.org/x/net/proxy"
 )
 
 const (
-	READ_TIMEOUT = 5
-	CONN_TIMEOUT = 5
+	readTimeout = 5 * time.Second
+	connTimeout = 5 * time.Second
 )
 
 var (
-	proxyHost string
-	proxyAuth *proxy.Auth
+	ProxyRetryTime = 5 * time.Second
+	proxyHost      string
+	proxyAuth      *proxy.Auth
 )
 
 type Gsd struct {

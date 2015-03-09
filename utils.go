@@ -3,6 +3,7 @@ package gsd
 import (
 	"log"
 	"net"
+	"time"
 
 	"golang.org/x/net/proxy"
 )
@@ -12,6 +13,9 @@ type GsdDialer struct {
 }
 
 func (d *GsdDialer) Dial(network, address string) (net.Conn, error) {
+	var conn net.Conn
+	var err error
+
 	dialer := &net.Dialer{
 		Timeout:   d.Timeout,
 		KeepAlive: d.KeepAlive,
@@ -19,9 +23,12 @@ func (d *GsdDialer) Dial(network, address string) (net.Conn, error) {
 
 	if proxyHost != "" {
 		// Check if proxy is there
-		conn, err := net.Dial(network, proxyHost)
-		if err != nil {
-			log.Fatal(err)
+		for conn == nil {
+			conn, err = net.Dial(network, proxyHost)
+			if err != nil {
+				log.Println("WARNING: Proxy not reachable")
+				time.Sleep(ProxyRetryTime)
+			}
 		}
 
 		// Proxy is there, connect
@@ -32,7 +39,7 @@ func (d *GsdDialer) Dial(network, address string) (net.Conn, error) {
 		conn, err = proxyDialer.Dial(network, address)
 		return conn, err
 	} else {
-		conn, err := dialer.Dial(network, address)
+		conn, err = dialer.Dial(network, address)
 		return conn, err
 	}
 }

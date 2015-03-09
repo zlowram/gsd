@@ -6,7 +6,6 @@ import (
 	"net"
 	"net/http"
 	"net/http/httputil"
-	"time"
 )
 
 type HttpsService struct {
@@ -32,14 +31,14 @@ func (s *HttpsService) GetBanner(ip string, port string) Banner {
 	tr := &http.Transport{
 		Dial: (&GsdDialer{
 			Dialer: &net.Dialer{
-				Timeout:   CONN_TIMEOUT * time.Second,
+				Timeout:   connTimeout,
 				KeepAlive: 0,
 			},
 		}).Dial,
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 
-	c := &http.Client{Timeout: 5 * time.Second, Transport: tr}
+	c := &http.Client{Timeout: connTimeout, Transport: tr}
 	res, err := c.Get("https://" + ip + ":" + port)
 	if err != nil {
 		banner.Error = err.Error()

@@ -34,7 +34,7 @@ func (s *TCPTLSService) GetBanner(ip string, port string) Banner {
 	// Connect
 	dialer := &GsdDialer{
 		Dialer: &net.Dialer{
-			Timeout:   CONN_TIMEOUT * time.Second,
+			Timeout:   connTimeout,
 			KeepAlive: 0,
 		},
 	}
@@ -62,7 +62,7 @@ func (s *TCPTLSService) GetBanner(ip string, port string) Banner {
 
 	// Wait to receive content
 	now := time.Now()
-	conn.SetReadDeadline(now.Add(READ_TIMEOUT * time.Second))
+	conn.SetReadDeadline(now.Add(readTimeout))
 
 	buff := bytes.NewBuffer(nil)
 	r := bufio.NewReader(conn)
@@ -89,7 +89,7 @@ func (s *TCPTLSService) GetBanner(ip string, port string) Banner {
 
 	// Wait to receive content again
 	now = time.Now()
-	conn.SetReadDeadline(now.Add(READ_TIMEOUT * time.Second))
+	conn.SetReadDeadline(now.Add(readTimeout))
 	_, err = io.Copy(buff, r)
 	if err != nil {
 		banner.Error = err.Error()

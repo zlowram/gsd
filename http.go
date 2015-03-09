@@ -29,7 +29,7 @@ func (s *HttpService) GetBanner(ip string, port string) Banner {
 	tr := &http.Transport{
 		Dial: (&GsdDialer{
 			Dialer: &net.Dialer{
-				Timeout:   CONN_TIMEOUT * time.Second,
+				Timeout:   connTimeout,
 				KeepAlive: 0,
 			},
 		}).Dial,
